@@ -54,18 +54,40 @@ class lib{
         return $array;
     }
 
-    //Used to create a iqa_assignment record to log the iqa for a user and course
-    public function create_iqa($course, $learner, $iqa): bool{
+    //Check if a learner is enrolled in a specified course
+    public function check_learner_enrolment($cid, $uid): bool{
         global $DB;
-        $record = new stdClass();
-        $record->courseid = $course;
-        $record->learnerid = $learner;
-        $record->iqaid = $iqa;
-        if($DB->record_exists('iqa_assignment', [$DB->sql_compare_text('learnerid') => $learner, $DB->sql_compare_text('courseid') => $course])){
-            return false;
-        } elseif($DB->insert_record('iqa_assignment', $record) === false){
+        $records = $DB->get_records_sql('SELECT ra.id as id, c.id as courseid, c.fullname as fullname, eu.userid as userid, eu.firstname as firstname, eu.lastname as lastname, ra.roleid as roleid FROM {course} c
+        INNER JOIN {context} ctx ON c.id = ctx.instanceid
+        INNER JOIN {role_assignments} ra ON ra.contextid = ctx.id AND ra.roleid = 5
+        INNER JOIN (
+            SELECT e.courseid, ue.userid, u.firstname, u.lastname FROM {enrol} e
+            INNER JOIN {user_enrolments} ue ON ue.enrolid = e.id AND ue.status != 1
+            INNER JOIN {user} u ON u.id = ue.userid
+        ) eu ON c.id = eu.courseid AND ra.userid = eu.userid AND eu.userid = ? AND eu.courseid = ?',[$uid, $cid]);
+        if(count($records) > 0){
+            return true;
+        } else {
             return false;
         }
-        return true;
+    }
+
+    //Used to create a iqa_assignment record to log the iqa for a user and course
+    public function create_iqa($course, $learner, $iqa): bool{
+        if(!$this->check_learner_enrolment($course, $learner)){
+            return false;
+        } else {
+            global $DB;
+            $record = new stdClass();
+            $record->courseid = $course;
+            $record->learnerid = $learner;
+            $record->iqaid = $iqa;
+            if($DB->record_exists('iqa_assignment', [$DB->sql_compare_text('learnerid') => $learner, $DB->sql_compare_text('courseid') => $course])){
+                return false;
+            } elseif($DB->insert_record('iqa_assignment', $record) === false){
+                return false;
+            }
+            return true;
+        }
     }
 }

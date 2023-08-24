@@ -3,8 +3,10 @@ const iqabtn = $('#assign_iqa_btn')[0];
 const alspan = $('#choose_al_div')[0];
 const iqaspan = $('#choose_aiqa_div')[0];
 const success = $('#assign_success')[0];
+const errorText = $('#assign_error')[0];
+const div = $('#assign_iqa_div')[0];
 iqabtn.addEventListener('click', ()=>{
-    const div = $('#assign_iqa_div')[0];
+    errorText.style.display = 'none';
     if(div.style.display == 'block'){
         div.style.display = 'none';
     } else if(div.style.display == 'none'){
@@ -65,7 +67,6 @@ const form = $('#assign_iqa_form')[0];
 form.addEventListener('submit', (e)=>{
     e.preventDefault();
     let params = 'c='+$('#choose_ac')[0].value;
-    const errorText = $('#assign_error')[0];
     const learner = $(`.iqa-learner`);
     const iqa = $('.iqa-iqa');
     let required = [false, false];
@@ -107,7 +108,7 @@ form.addEventListener('submit', (e)=>{
                     errorText.innerText = text['error'];
                     errorText.style.display = 'block';
                 } else if(text['return']){
-                    $('#assign_iqa_div')[0].style.display = 'none';
+                    div.style.display = 'none';
                     iqabtn.click();
                     success.innerText = 'Success';
                     success.style.display = 'block';
