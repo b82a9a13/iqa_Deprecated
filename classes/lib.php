@@ -90,4 +90,36 @@ class lib{
             return true;
         }
     }
+
+    //Used to get all learners which have a iqa for all learners and courses
+    public function get_iqa(): array{
+        global $DB;
+        $records = $DB->get_records_sql('SELECT i.id as id, i.iqaid as iqaid, i.learnerid as learnerid, u.firstname as ufirstname, u.lastname as ulastname, ua.firstname as uafirstname, ua.lastname as ualastname, c.fullname as fullname, c.id as courseid FROM {iqa_assignment} i 
+            LEFT JOIN {user} u ON u.id = i.iqaid
+            LEFT JOIN {user} ua ON ua.id = i.learnerid
+            LEFT JOIN {course} c ON c.id = i.courseid'
+        );
+        $array = [[],[]];
+        $keys = [];
+        foreach($records as $record){
+            $key = $record->courseid;
+            if(!in_array([$record->fullname, $key], $array[0])){
+                array_push($array[0], [$record->fullname, $key]);
+            }
+            if(!array_key_exists($key, $array[1])){
+                $array[1][$key] = array();
+                array_push($keys, $key);
+            }
+            array_push($array[1][$key], [$record->uafirstname.' '.$record->ualastname, $record->learnerid, $record->iqaid, $record->ufirstname.' '.$record->ulastname]);
+        }
+        usort($array[0], function($a, $b){
+            return strcmp($a[0], $b[0]);
+        });
+        foreach($keys as $ke){
+            usort($array[1][$ke], function($a, $b){
+                return strcmp($a[0], $b[0]);
+            });
+        }
+        return $array;
+    }
 }

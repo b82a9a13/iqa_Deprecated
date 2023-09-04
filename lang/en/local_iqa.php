@@ -14,6 +14,7 @@
     $string['choose_al'] = 'Choose a Learner';
     $string['choose_aiqa'] = 'Choose a IQA';
     $string['course'] = 'Course';
+    $string['change_iqa'] = 'Change IQA';
 //D
 //E
 //F
@@ -46,6 +47,7 @@
 //T
 //U
 //V
+    $string['view_iqa'] = 'View IQA';
 //W
 //X
 //Y

@@ -31,7 +31,9 @@ $template = (Object)[
     'course' => get_string('course', $p),
     'learner' => get_string('learner', $p),
     'iqa' => get_string('iqa', $p),
-    'assign_iqa' => get_string('assign_iqa', $p)
+    'assign_iqa' => get_string('assign_iqa', $p),
+    'view_iqa' => get_string('view_iqa', $p),
+    'change_iqa' => get_string('change_iqa', $p)
 ];
 echo $OUTPUT->render_from_template('local_iqa/admin', $template);
 
